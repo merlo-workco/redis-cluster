@@ -18,62 +18,23 @@ The redis has two types, redis-server and redis-sentinel, to work in cluster. Th
 | ACT_SENTINEL          | The redis will perform judge to decide which redis server is master                                |
 | REDIS_MASTER_HOSTNAME | The first connecting redis hostname or ip address, basically it is the redis master in the cluster |
 | SENTINEL_QUORUM       | The quorum value defined in the redis sentinel                                                     |
-| LOGSTASH_STRING       | This docker image includes a filebeat daemon, it forwards the redis log to logstash                |
 
 ## For non-swarm mode
 #### Standalone
 ```sh
-$ docker run -p 6379:6379 -p 26379:26379 --name redis-standalone -h redis-standalone -e STANDALONE=1 -e REDISPASSWORD=redispass -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
+$ docker run -p 6379:6379 -p 26379:26379 --name redis-standalone -h redis-standalone -e STANDALONE=1 -e REDISPASSWORD=redispass wiarea/redis:3.0.7-alpine
 ```
 #### Cluster-Master
 ```sh
-$ docker run -p 6379:6379 -p 26379:26379 --name redis-master -h redis-master -e ACT_MASTER=1 -e REDISPASSWORD=redispass -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
+$ docker run -p 6379:6379 -p 26379:26379 --name redis-master -h redis-master -e ACT_MASTER=1 -e REDISPASSWORD=redispass -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num wiarea/redis:3.0.7-alpine
 ```
 #### Cluster-Slave
 ```sh
-$ docker run -p 6379:6379 -p 26379:26379 --name redis-slave -h redis-slave -e ACT_SLAVE=1 -e REDISPASSWORD=redispass -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
+$ docker run -p 6379:6379 -p 26379:26379 --name redis-slave -h redis-slave -e ACT_SLAVE=1 -e REDISPASSWORD=redispass -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num wiarea/redis:3.0.7-alpine
 ```
 #### Sentinel only
 ```sh
-$ docker run -p 6379:6379 -p 26379:26379 --name redis-sentinel -h redis-sentinel -e ACT_SLAVE=1 -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
-```
-
-## Build in swarm
-```sh
-$ docker -H tcp://swarmmaster:50000 build --build-arg="constraint:node==[node]" -t "wiarea/redis:3.0.7-alpine" .
-```
-
-## For swarm mode
-#### Standalone
-```sh
-$ docker -H tcp://swarmmaster:50000 run -d -p 6379:6379 -p 26379:26379 -e constraint:node==[node] --name redis-standalone --net oanet -h redis-standalone -e STANDALONE=1 -e REDISPASSWORD=redispass -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
-```
-#### Cluster-Master
-```sh
-$ docker -H tcp://swarmmaster:50000 run -d -p 6379:6379 -p 26379:26379 -e constraint:node==[node] --name redis-master --net oanet -h redis-master -e ACT_MASTER=1 -e REDISPASSWORD=redispass -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
-```
-#### Cluster-Slave
-```sh
-$ docker -H tcp://swarmmaster:50000 run -d -p 6379:6379 -p 26379:26379 -e constraint:node==[node] --name redis-slave --net oanet -h redis-slave -e ACT_SLAVE=1 -e REDISPASSWORD=redispass -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
-```
-#### Sentinel only
-```sh
-$ docker -H tcp://swarmmaster:50000 run -d -p 6379:6379 -p 26379:26379 -e constraint:node==[node] --name redis-sentinel --net oanet -h redis-sentinel -e ACT_SLAVE=1 -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num -e LOGSTASH_STRING=\"aaa:5044\",\"bbb:5044\" wiarea/redis:3.0.7-alpine
-```
-
-## Stop container in swarm
-```sh
-$ docker -H tcp://swarmmaster:50000 stop [container_name]
-```
-
-## Remove container in swarm
-```sh
-$ docker -H tcp://swarmmaster:50000 rm [container_name]
-```
-
-## Execute command in specific container
-```sh
-$ docker -H tcp://swarmmaster:50000 exec [container_name] command
+$ docker run -p 6379:6379 -p 26379:26379 --name redis-sentinel -h redis-sentinel -e ACT_SLAVE=1 -e REDIS_MASTER_HOSTNAME=master_host_ip -e SENTINEL_QUORUM=quorum_num wiarea/redis:3.0.7-alpine
 ```
 
   [redis sentinel website]: <http://redis.io/topics/sentinel>
