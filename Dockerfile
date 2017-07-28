@@ -1,4 +1,4 @@
-FROM redis:3.2-alpine
+FROM redis:alpine
 
 COPY conf /conf
 
